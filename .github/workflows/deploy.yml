@@ -35,8 +35,11 @@ jobs:
       #ECRログイン
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v1
+        with:
+          region: ${{ secrets.AWS_REGION }}
         #GitHub Actions ランナーをECRに認証
         #これでDocker pushが可能になる
+        #リージョン指定
 
       #Dockerイメージビルド
       - name: Build Docker image
