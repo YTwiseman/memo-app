@@ -58,11 +58,10 @@ jobs:
       - name: CDK Deploy
         run : npx cdk deploy --require-approval never
         working-directory: ./cdk
-        enc:
+        env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
           AWS_REGION: ${{ secrets.AWS_REGION}}
         #cdk/ディレクトリでnpx cdk deploy実行
         #--require-approval never: デプロイ時のYES/NO確認をスキップ
         #AWS認証情報（GitHub Secretsから渡す）を利用してデプロイ
-        
