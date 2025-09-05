@@ -46,7 +46,7 @@ jobs:
       #Dockerイメージビルド
       - name: Build Docker image
         run: |
-          IMAGE_URI=${{ secrets.ECR_REPO }}:ratest
+          IMAGE_URI=${{ secrets.ECR_REPO }}:latest
           docker build -t $IMAGE_URI ./api
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
         #./api ディレクトリからDockerイメージをビルド
