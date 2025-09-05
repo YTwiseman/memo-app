@@ -1,0 +1,68 @@
+name: Deploy
+on:
+  push:
+      branches: [ main ]
+#ワークフロー名Deploy
+#トリガー:mainブランチへのpush
+# →mainにコードをマージ/プッシュすると自動でCI/CDが走る
+
+#ジョブ定義
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    #jobsの下に処理を定義
+    #runs-on: ubuntu-latest　→ GitHubが提供するUbuntuランナーで実行
+
+    steps:
+      - uses: actions/checkout@v3 #コードをチェックアウト
+
+      #Node.jsをセットアップ
+      - name: Setup node.js　
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          #Node.js　v18をインストール　TypeScript/CDK/buildに必要
+      
+      #依存関係のインストール
+      - name: Install dependencies
+        run: |
+          npm install
+          cd cdk
+          npm install
+        #ルート（APIコード用）の依存関係をインストール
+        #cdk/ ディレクトリでも依存関係をインストール
+
+      #ECRログイン
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v1
+        #GitHub Actions ランナーをECRに認証
+        #これでDocker pushが可能になる
+
+      #Dockerイメージビルド
+      - name: Build Docker image
+        run: |
+          IMAGE_URI=${{ secrets.ECR_REPO }}:ratest
+          docker build -t $IMAGE_URI ./api
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+        #./api ディレクトリからDockerイメージをビルド
+        #ECR_REPO (GitHub Secrets)に設定したECRリポジトリURIを使ってタグ付け
+        #IMAGE_URI を環境変数に保存
+
+      #DockerイメージをECRにプッシュ
+      - name: Push Docker image to ECR
+        run: docker push ${{ env.IMAGE_URI }}
+        #ビルドしたイメージをAWS ECRにアップロード
+        #Lambdaはこのイメージを参照して動く
+
+      #CDKデプロイ
+      - name: CDK Deploy
+        run : npx cdk deploy --require-approval never
+        working-directory: ./cdk
+        enc:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          AWS_REGION: ${{ secrets.AWS_REGION}}
+        #cdk/ディレクトリでnpx cdk deploy実行
+        #--require-approval never: デプロイ時のYES/NO確認をスキップ
+        #AWS認証情報（GitHub Secretsから渡す）を利用してデプロイ
+        
