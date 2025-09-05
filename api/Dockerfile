@@ -7,7 +7,12 @@ WORKDIR ${LAMBDA_TASK_ROOT}
 COPY package*.json ./
 
 # 依存関係インストール
-RUN npm install
+COPY api/package*.json ${LAMBDA_TASK_ROOT}/
+WORKDIR ${LAMBDA_TASK_ROOT}
+
+# クリーンインストール
+RUN npm install --production
+
 
 # 残りのアプリをコピー
 COPY . .
