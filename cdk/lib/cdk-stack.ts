@@ -1,9 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import * as lambda from 'aws-cdk-lib/aws-lambda'
-import * as apigateway from 'aws-cdk-lib/aws-apigateway'
-import * as ecr from 'aws-cdk-lib/aws-ecr'
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
 //cdk：CDKの基本クラスや機能
 //Construct：CDKの基本構造単位
 //dynamodb, lambda, apigateway, ecr：それぞれのAWSサービスをCDKで扱うためのモジュール
