@@ -47,7 +47,7 @@ jobs:
       - name: Build Docker image
         run: |
           IMAGE_URI=${{ secrets.ECR_REPO }}:latest
-          docker build -f api/src/Dockerfile -t $IMAGE_URI .
+          docker build -f ./api/src/Dockerfile -t $IMAGE_URI .
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
         #./api ディレクトリからDockerイメージをビルド
         #ECR_REPO (GitHub Secrets)に設定したECRリポジトリURIを使ってタグ付け
