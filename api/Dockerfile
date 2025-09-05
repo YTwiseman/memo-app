@@ -15,7 +15,7 @@ RUN npm install --production
 
 
 # 残りのアプリをコピー
-COPY . .
+COPY ./api /.
 
 # Lambdaハンドラ
 CMD ["index.handler"]
