@@ -21,8 +21,8 @@
     },
     "TableName": "MemoTable"
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
    "Metadata": {
     "aws:cdk:path": "MemoStack/MemoTable/Resource"
    }
@@ -113,7 +113,7 @@
    "Properties": {
     "Code": {
      "ImageUri": {
-      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:7e020fb912a88967bc518eeb84e36e95ad26b956db071cabafd767e1ef3aff91"
+      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:2a63dd498b8d7c30252f9ad3b8cc3dba87798218a3fc5542afafced10c9a3e58"
      }
     },
     "Environment": {
@@ -138,7 +138,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "MemoStack/MemoFunction/Resource",
-    "aws:asset:path": "asset.7e020fb912a88967bc518eeb84e36e95ad26b956db071cabafd767e1ef3aff91",
+    "aws:asset:path": "asset.2a63dd498b8d7c30252f9ad3b8cc3dba87798218a3fc5542afafced10c9a3e58",
     "aws:asset:dockerfile-path": "Dockerfile",
     "aws:asset:property": "Code.ImageUri"
    }

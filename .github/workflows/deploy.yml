@@ -1,34 +1,36 @@
-name: Deploy  # ワークフロー名
+name: Deploy
 
+# main ブランチへの push をトリガーに CI/CD を実行
 on:
   push:
-    branches: [ main ]  # main ブランチに push されたときに実行
+    branches: [ main ]
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest  # ジョブ実行環境（最新の Ubuntu）
+    # GitHub が提供する Ubuntu ランナー上で実行
+    runs-on: ubuntu-latest
 
     steps:
-      # 1. リポジトリをチェックアウト（コードを取得）
+      # 1. コードをチェックアウト
       - uses: actions/checkout@v3
+        name: Checkout repository
 
-      # 2. Node.js をセットアップ
+      # 2. Node.js をセットアップ（TypeScript/CDK のビルドに必要）
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'  # Node.js 18 を使用
+          node-version: '18'
 
       # 3. 依存関係をインストール
       - name: Install dependencies
         run: |
-          cd api  
-          npm install  
-          cd ../cdk    
           npm install
-        # API プロジェクトディレクトリ
-        # 依存関係インストール
-        # CDK プロジェクトディレクトリ
-
+          cd cdk
+          npm install
+          cd ..
+        # CDK ディレクトリの依存関係
+        # ルート（API）の依存関係
+        
       # 4. AWS ECR にログイン
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v1
@@ -40,22 +42,24 @@ jobs:
       # 5. Docker イメージをビルド
       - name: Build Docker image
         run: |
-          IMAGE_URI=${{ secrets.ECR_REPO }}:latest  
-          docker build -f api/src/Dockerfile -t $IMAGE_URI .  
-          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV      
-        # ECR リポジトリ URI
-        # Dockerfile を指定してビルド
-        # IMAGE_URI を環境変数に保存
-        
+          IMAGE_URI=${{ secrets.ECR_REPO }}:latest
+          docker build -f ./api/src/Dockerfile -t $IMAGE_URI .
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+        # Dockerfile の場所を指定してイメージビルド
+        # GitHub Actions 内で IMAGE_URI を環境変数として使えるように設定
+
       # 6. Docker イメージを ECR にプッシュ
       - name: Push Docker image to ECR
         run: docker push ${{ env.IMAGE_URI }}
 
-      # 7. CDK でインフラをデプロイ
+      # 7. CDK デプロイ（Lambda / API Gateway / DynamoDB）
       - name: CDK Deploy
-        run: npx cdk deploy --require-approval never
-        working-directory: ./cdk  # CDK ディレクトリで実行
+        working-directory: ./cdk
         env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          npx cdk deploy --require-approval never
+        # CDK デプロイ実行
+        # --require-approval never : デプロイ時の確認をスキップ
