@@ -20,13 +20,13 @@ jobs:
           node-version: '18'
 
       # 3. ルートと CDK ディレクトリの依存関係インストール
-      - name: Install dependencies
-        run: |
-          npm install        
-          cd cdk
-          npm install        
-        # APIやルートのパッケージ依存関係
-        # CDK プロジェクト依存関係
+      - name: Install API dependencies
+        working-directory: ./api
+        run: npm install
+
+      - name: Install CDK dependencies
+        working-directory: ./cdk
+        run: npm install
 
       # 4. TypeScript ビルド
       - name: Build TypeScript
