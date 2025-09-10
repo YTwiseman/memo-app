@@ -30,10 +30,8 @@ jobs:
 
       # 4. TypeScript ビルド
       - name: Build TypeScript
-        run: |
-          npx tsc --project tsconfig.json   
-          cd cdk
-          npx tsc --project tsconfig.json   
+        working-directory: ./api
+        run: npx tsc --project tsconfig.json
         # API ソースを dist にビルド
         # CDK コードを dist にビルド
 
