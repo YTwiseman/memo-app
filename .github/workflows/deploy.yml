@@ -22,21 +22,26 @@ jobs:
       # 3. ルートと CDK ディレクトリの依存関係インストール
       - name: Install dependencies
         run: |
-          npm install        # APIやルートのパッケージ依存関係
+          npm install        
           cd cdk
-          npm install        # CDK プロジェクト依存関係
+          npm install        
+        # APIやルートのパッケージ依存関係
+        # CDK プロジェクト依存関係
 
       # 4. TypeScript ビルド
       - name: Build TypeScript
         run: |
-          npx tsc --project tsconfig.json   # API ソースを dist にビルド
+          npx tsc --project tsconfig.json   
           cd cdk
-          npx tsc --project tsconfig.json   # CDK コードを dist にビルド
+          npx tsc --project tsconfig.json   
+        # API ソースを dist にビルド
+        # CDK コードを dist にビルド
 
       # 5. テスト実行（Jest または任意のテストランナー）
       - name: Run Tests
         run: |
-          npx jest        # jest が devDependencies にある場合
+          npx jest        
+        # jest が devDependencies にある場合
         continue-on-error: false
 
       # 6. CDK デプロイ（Lambda Docker イメージ自動作成 + ECR push）
