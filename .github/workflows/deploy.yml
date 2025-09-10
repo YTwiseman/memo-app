@@ -22,14 +22,15 @@ jobs:
           node-version: '18'
 
       # 3. 依存関係をインストール
-      - name: Install dependencies
-        run: |
-          npm install
-          cd cdk
-          npm install
-          cd ..
-        # CDK ディレクトリの依存関係
+      - name: Install API dependencies
+        run: npm install
+        working-directory: ./api
         # ルート（API）の依存関係
+      - name: Install CDK dependencies
+        run: npm install
+        working-directory: ./cdk
+
+        # CDK ディレクトリの依存関係
         
       # 4. AWS ECR にログイン
       - name: Login to ECR
@@ -43,7 +44,7 @@ jobs:
       - name: Build Docker image
         run: |
           IMAGE_URI=${{ secrets.ECR_REPO }}:latest
-          docker build -f ./api/src/Dockerfile -t $IMAGE_URI .
+          docker build -f ./api/Dockerfile -t $IMAGE_URI .
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
         # Dockerfile の場所を指定してイメージビルド
         # GitHub Actions 内で IMAGE_URI を環境変数として使えるように設定
