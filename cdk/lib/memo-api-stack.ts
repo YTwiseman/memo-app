@@ -4,13 +4,7 @@ import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as apigw from "aws-cdk-lib/aws-apigateway";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 
-/**
- * MemoApiStack クラス
- * このスタックは以下を構築します：
- * - DynamoDB テーブル（メモ保存用）
- * - Lambda 関数（Docker イメージで API ロジックを実行）
- * - API Gateway（Lambda を REST API として公開）
- */
+// MemoApiStack クラスを定義（CDK スタック）
 export class MemoApiStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -20,18 +14,16 @@ export class MemoApiStack extends cdk.Stack {
       // パーティションキーは "id"（文字列型）
       partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
       // DynamoDB 上のテーブル名
-      tableName: "MemoTable",
-      // ストレージ削除時に自動削除（開発環境用）
-      removalPolicy: cdk.RemovalPolicy.DESTROY
+      tableName: "MemoTable"
     });
 
     // 2. Lambda 関数（Docker イメージ）を作成
     const fn = new lambda.DockerImageFunction(this, "MemoFunction", {
-      // Dockerfile を参照してイメージをビルド
+      // Docker イメージを ../api ディレクトリの Dockerfile から作成
       code: lambda.DockerImageCode.fromImageAsset("../api"),
-      // Lambda 内で環境変数として DynamoDB のテーブル名を利用
+      // 環境変数としてテーブル名を渡す
       environment: { TABLE_NAME: table.tableName },
-      // Lambda のメモリサイズ
+      // メモリサイズを 512MB に設定
       memorySize: 512
     });
 
@@ -39,11 +31,7 @@ export class MemoApiStack extends cdk.Stack {
     table.grantReadWriteData(fn);
 
     // 3. API Gateway（Lambda REST API）を作成
-    // Lambda をプロキシ統合として REST API に接続
-    new apigw.LambdaRestApi(this, "MemoApi", {
-      handler: fn,
-      proxy: true // 全てのリクエストを Lambda に転送
-    });
+    // Lambda 関数をハンドラーとしてプロキシ統合
+    new apigw.LambdaRestApi(this, "MemoApi", { handler: fn, proxy: true });
   }
 }
-

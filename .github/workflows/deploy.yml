@@ -1,66 +1,50 @@
-name: Deploy
-
-# main ブランチへの push をトリガーに CI/CD を実行
+name: CI/CD Deploy
 on:
   push:
     branches: [ main ]
+# main に push されたら自動で CI/CD が走る
 
 jobs:
-  build-and-deploy:
-    # GitHub が提供する Ubuntu ランナー上で実行
+  build-test-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. コードをチェックアウト
-      - uses: actions/checkout@v3
-        name: Checkout repository
+      # 1. リポジトリをチェックアウト
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      # 2. Node.js をセットアップ（TypeScript/CDK のビルドに必要）
+      # 2. Node.js v18 をセットアップ
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      # 3. 依存関係をインストール
-      - name: Install API dependencies
-        run: npm install
-        working-directory: ./api
-        # ルート（API）の依存関係
-      - name: Install CDK dependencies
-        run: npm install
-        working-directory: ./cdk
-
-        # CDK ディレクトリの依存関係
-        
-      # 4. AWS ECR にログイン
-      - name: Login to ECR
-        uses: aws-actions/amazon-ecr-login@v1
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-      # 5. Docker イメージをビルド
-      - name: Build Docker image
+      # 3. ルートと CDK ディレクトリの依存関係インストール
+      - name: Install dependencies
         run: |
-          IMAGE_URI=${{ secrets.ECR_REPO }}:latest
-          docker build -f ./api/Dockerfile -t $IMAGE_URI .
-          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
-        # Dockerfile の場所を指定してイメージビルド
-        # GitHub Actions 内で IMAGE_URI を環境変数として使えるように設定
+          npm install        # APIやルートのパッケージ依存関係
+          cd cdk
+          npm install        # CDK プロジェクト依存関係
 
-      # 6. Docker イメージを ECR にプッシュ
-      - name: Push Docker image to ECR
-        run: docker push ${{ env.IMAGE_URI }}
+      # 4. TypeScript ビルド
+      - name: Build TypeScript
+        run: |
+          npx tsc --project tsconfig.json   # API ソースを dist にビルド
+          cd cdk
+          npx tsc --project tsconfig.json   # CDK コードを dist にビルド
 
-      # 7. CDK デプロイ（Lambda / API Gateway / DynamoDB）
+      # 5. テスト実行（Jest または任意のテストランナー）
+      - name: Run Tests
+        run: |
+          npx jest        # jest が devDependencies にある場合
+        continue-on-error: false
+
+      # 6. CDK デプロイ（Lambda Docker イメージ自動作成 + ECR push）
       - name: CDK Deploy
         working-directory: ./cdk
         env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
           npx cdk deploy --require-approval never
-        # CDK デプロイ実行
-        # --require-approval never : デプロイ時の確認をスキップ
