@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    // コンパイル後の JavaScript のバージョン
+    "target": "ES2022",
+
+    // モジュールシステム（Node.js 互換）
+    "module": "CommonJS",
+
+    // コンパイル後の出力ディレクトリ
+    "outDir": "dist",
+
+    // 厳密モードを有効にして型安全を強化
+    "strict": true,
+
+    // CommonJS と ESModules の相互運用を可能にする
+    "esModuleInterop": true,
+
+    // Node.js 方式のモジュール解決
+    "moduleResolution": "node",
+
+    // 型定義ファイルのルートパス（@types を参照）
+    "typeRoots": ["./node_modules/@types"]
+  },
+
+  // コンパイル対象のファイル
+  "include": ["src/**/*.ts"]
+}

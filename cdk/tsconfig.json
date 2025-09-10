@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    // コンパイル後の JavaScript のバージョン
+    "target": "ES2022",
+
+    // モジュールシステム（Node.js 互換）
+    "module": "CommonJS",
+
+    // 利用する標準ライブラリ
+    "lib": ["ES2022"],
+
+    // コンパイル後の出力ディレクトリ
+    "outDir": "dist",
+
+    // 厳密モードを有効にして型安全を強化
+    "strict": true,
+
+    // CommonJS と ESModules の相互運用を可能にする
+    "esModuleInterop": true,
+
+    // モジュールの解決方法を Node.js 方式に設定
+    "moduleResolution": "node"
+  },
+
+  // コンパイル対象のファイル
+  "include": ["lib/**/*.ts", "bin/**/*.ts"]
+}

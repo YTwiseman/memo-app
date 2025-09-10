@@ -1,0 +1,17 @@
+# Node.js
+node_modules/
+dist/
+.env
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE / エディタ
+.vscode/
+.idea/
+*.log
+
+# Docker
+*.tar

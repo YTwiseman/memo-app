@@ -1,0 +1,61 @@
+name: Deploy  # ワークフロー名
+
+on:
+  push:
+    branches: [ main ]  # main ブランチに push されたときに実行
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest  # ジョブ実行環境（最新の Ubuntu）
+
+    steps:
+      # 1. リポジトリをチェックアウト（コードを取得）
+      - uses: actions/checkout@v3
+
+      # 2. Node.js をセットアップ
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # Node.js 18 を使用
+
+      # 3. 依存関係をインストール
+      - name: Install dependencies
+        run: |
+          cd api  
+          npm install  
+          cd ../cdk    
+          npm install
+        # API プロジェクトディレクトリ
+        # 依存関係インストール
+        # CDK プロジェクトディレクトリ
+
+      # 4. AWS ECR にログイン
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v1
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # 5. Docker イメージをビルド
+      - name: Build Docker image
+        run: |
+          IMAGE_URI=${{ secrets.ECR_REPO }}:latest  
+          docker build -f api/src/Dockerfile -t $IMAGE_URI .  
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV      
+        # ECR リポジトリ URI
+        # Dockerfile を指定してビルド
+        # IMAGE_URI を環境変数に保存
+        
+      # 6. Docker イメージを ECR にプッシュ
+      - name: Push Docker image to ECR
+        run: docker push ${{ env.IMAGE_URI }}
+
+      # 7. CDK でインフラをデプロイ
+      - name: CDK Deploy
+        run: npx cdk deploy --require-approval never
+        working-directory: ./cdk  # CDK ディレクトリで実行
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}

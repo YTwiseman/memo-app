@@ -1,0 +1,34 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "8ba87e574ecc2db96ca64987f866504a3b1322a3dc5ed634e3fcd05a0bca2c56": {
+      "displayName": "MemoStack Template",
+      "source": {
+        "path": "MemoStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-e3744e5d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8ba87e574ecc2db96ca64987f866504a3b1322a3dc5ed634e3fcd05a0bca2c56.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {
+    "7e020fb912a88967bc518eeb84e36e95ad26b956db071cabafd767e1ef3aff91": {
+      "displayName": "MemoFunction/AssetImage",
+      "source": {
+        "directory": "asset.7e020fb912a88967bc518eeb84e36e95ad26b956db071cabafd767e1ef3aff91"
+      },
+      "destinations": {
+        "current_account-current_region-4f9a6d1a": {
+          "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
+          "imageTag": "7e020fb912a88967bc518eeb84e36e95ad26b956db071cabafd767e1ef3aff91",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  }
+}
