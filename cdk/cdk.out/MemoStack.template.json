@@ -30,12 +30,152 @@
   "MemoApiRepoCC7D0EE1": {
    "Type": "AWS::ECR::Repository",
    "Properties": {
-    "RepositoryName": "memo-api"
+    "RepositoryName": "memo-api",
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-images",
+      "Value": "true"
+     }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
    "Metadata": {
     "aws:cdk:path": "MemoStack/MemoApiRepo/Resource"
+   }
+  },
+  "MemoApiRepoAutoDeleteImagesCustomResource8ADF3F29": {
+   "Type": "Custom::ECRAutoDeleteImages",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030",
+      "Arn"
+     ]
+    },
+    "RepositoryName": {
+     "Ref": "MemoApiRepoCC7D0EE1"
+    }
+   },
+   "DependsOn": [
+    "MemoApiRepoCC7D0EE1"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "MemoStack/MemoApiRepo/AutoDeleteImagesCustomResource/Default"
+   }
+  },
+  "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ecr:BatchDeleteImage",
+          "ecr:DescribeRepositories",
+          "ecr:ListImages",
+          "ecr:ListTagsForResource"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ecr:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":repository/*"
+            ]
+           ]
+          }
+         ],
+         "Condition": {
+          "StringEquals": {
+           "ecr:ResourceTag/aws-cdk:auto-delete-images": "true"
+          }
+         }
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "MemoStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Role"
+   }
+  },
+  "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "35a53bc183aaf4d7fe84d5e5ed06d48f33ef294fa1325c16cf5db800fa6ee72d.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting images in ",
+       {
+        "Ref": "MemoApiRepoCC7D0EE1"
+       },
+       " repository."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "MemoStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.35a53bc183aaf4d7fe84d5e5ed06d48f33ef294fa1325c16cf5db800fa6ee72d",
+    "aws:asset:property": "Code"
    }
   },
   "MemoFunctionServiceRole85E973D6": {
@@ -124,7 +264,7 @@
    "Properties": {
     "Code": {
      "ImageUri": {
-      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:5ecacd1286313e518a84c188a4da8a7fbe203cc4c6b8ad4e8e2b276bf279f1ba"
+      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:a9030307b999d14de5cc503cd2a2085cfe1bbf67c240c96c8f63496b371decfd"
      }
     },
     "Environment": {
@@ -149,7 +289,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "MemoStack/MemoFunction/Resource",
-    "aws:asset:path": "asset.5ecacd1286313e518a84c188a4da8a7fbe203cc4c6b8ad4e8e2b276bf279f1ba",
+    "aws:asset:path": "asset.a9030307b999d14de5cc503cd2a2085cfe1bbf67c240c96c8f63496b371decfd",
     "aws:asset:dockerfile-path": "Dockerfile",
     "aws:asset:property": "Code.ImageUri"
    }
@@ -532,7 +672,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02PQU/DMAyFf8vuWWAVEufBhIQEYuq4T25qSrYmrmKXUUX97ygJjJ78+SV+fq50tbnTtyu48Nq053VvGx0PAuas4MLH2E4eHLWNju/Q9KgeP3yGWaEJOtY4EFuhMKWXRfePD8A4qx5c04KOOzJnDM8OOnwavRFLPk0ueY/BWWZLflYWnI41lcW57qm3Jm8rlIMcgRmF9cJ9mxQFg+1A8AKTji85Qo0s28GWuFfcGkOjF7XDoafJoZekLrqDQJdDFKiRaQwG03FqH+h7+lN+jQu/onxSm6RC83ydVDlgcrO+Sz/eRhlGmZWnFvWJb76qSm/u9WZ1YmvXYfRiHeq61B/zvxf1twEAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/22P3U7DMAyFn4X7LLAKievBhIQEouq4n9zUlGxNXCXORhX13VESYEXiyp+P/44rWa1v5c0VnP1KdcfVoFsZdwzqKODs97GbLBjqWhnfoB1QPLzbDLNA5WRscCSvmdyUKovsgvfgcRYDmLYDGbekjuieDPT4GKxiTTZNLrlGZ7T3muwsNBgZGyqHc6xp0CpfK5SN7MF7ZC8X2zdJETDqHhjPMMn4nC006Hkz6mL3FzdKUbAstjgONBm0nNRFtmPos4kCDXoKTmF6TtSOPqcf5Xtx4RfkD+qSVGiexaUveCbz79jfUu3opDt0+VZ+K3nQtk8zr4HHwLOw1KE8+OtTVcn1nVxfHbzWKxcsa4OyKfELKGZ3Fu0BAAA="
    },
    "Metadata": {
     "aws:cdk:path": "MemoStack/CDKMetadata/Default"

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/432fad0ece69be08aa0a42ed1bffa1a9ef9ea89073d280b1edaa8e69fe957395.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/81d929ce768ca17d831ea10346415b23a9baf35302b7a40e40fad51e8e2943c2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -52,6 +52,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MemoApiRepoCC7D0EE1"
+          }
+        ],
+        "/MemoStack/MemoApiRepo/AutoDeleteImagesCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MemoApiRepoAutoDeleteImagesCustomResource8ADF3F29"
+          }
+        ],
+        "/MemoStack/Custom::ECRAutoDeleteImagesCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/MemoStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773"
+          }
+        ],
+        "/MemoStack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030"
           }
         ],
         "/MemoStack/MemoFunction/ServiceRole/Resource": [

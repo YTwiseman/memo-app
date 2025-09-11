@@ -20,6 +20,7 @@ export class MemoApiStack extends cdk.Stack {
     const repo = new ecr.Repository(this, "MemoApiRepo", {
       repositoryName: "memo-api", // 任意のリポジトリ名
       removalPolicy: cdk.RemovalPolicy.DESTROY, // 開発用。削除時にリポジトリも消える
+      autoDeleteImages: true, // 中身ごと削除
     });
 
     // 3. Lambda (Dockerイメージ) 作成
