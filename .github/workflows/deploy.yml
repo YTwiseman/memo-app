@@ -33,16 +33,19 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
+      # 5. 
       - name: Build TS
-        run: cd api && npx tsc
-
+        run: |
+          cd api
+          npx tsc
+          cd ..
 
       # 5. Docker イメージのビルド
       - name: Build Docker image
         run: |
           IMAGE_URI=${{ secrets.ECR_REPO }}:latest
-          docker build -f api/Dockerfile -t $IMAGE_URI ./api
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+          docker build -f api/Dockerfile -t $IMAGE_URI api
 
       # 6. Docker イメージを ECR にプッシュ
       - name: Push Docker image to ECR
@@ -51,7 +54,7 @@ jobs:
       # 7. CDK デプロイ
       - name: CDK Deploy
         working-directory: ./cdk
-        run: npx cdk deploy --require-approval never -c useExistingRepo=true
+        run: npx --prefix . cdk deploy --require-approval never -c useExistingRepo=true
         env:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
