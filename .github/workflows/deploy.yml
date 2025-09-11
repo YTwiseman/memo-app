@@ -1,53 +1,54 @@
-name: CI/CD Deploy
+name: Deploy
 on:
   push:
-    branches: [ main ]
-# main に push されたら自動で CI/CD が走る
+    branches: [ main ] # main ブランチへの push で発火
 
 jobs:
-  build-test-deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. リポジトリをチェックアウト
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      # 1. コードをチェックアウト
+      - uses: actions/checkout@v3
 
-      # 2. Node.js v18 をセットアップ
+      # 2. Node.js のセットアップ
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      # 3. ルートと CDK ディレクトリの依存関係インストール
-      - name: Install API dependencies
-        working-directory: ./api
-        run: npm install
-
-      - name: Install CDK dependencies
-        working-directory: ./cdk
-        run: npm install
-
-      # 4. TypeScript ビルド
-      - name: Build TypeScript
-        working-directory: ./api
-        run: npx tsc --project tsconfig.json
-        # API ソースを dist にビルド
-        # CDK コードを dist にビルド
-
-      # 5. テスト実行（Jest または任意のテストランナー）
-      - name: Run Tests
+      # 3. 依存関係のインストール
+      - name: Install dependencies
         run: |
-          npx jest        
-        # jest が devDependencies にある場合
-        continue-on-error: false
+          cd api
+          npm install
+          cd ../cdk
+          npm install
 
-      # 6. CDK デプロイ（Lambda Docker イメージ自動作成 + ECR push）
-      - name: CDK Deploy
-        working-directory: ./cdk
+      # 4. ECR にログイン
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v1
         env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      # 5. Docker イメージのビルド
+      - name: Build Docker image
         run: |
-          npx cdk deploy --require-approval never
+          IMAGE_URI=${{ secrets.ECR_REPO }}:latest
+          docker build -f ./api/src/Dockerfile -t $IMAGE_URI ./api
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
+
+      # 6. Docker イメージを ECR にプッシュ
+      - name: Push Docker image to ECR
+        run: docker push ${{ env.IMAGE_URI }}
+
+      # 7. CDK デプロイ
+      - name: CDK Deploy
+        working-directory: ./cdk
+        run: npx cdk deploy --require-approval never -c useExistingRepo=true
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

@@ -5,7 +5,7 @@ FROM public.ecr.aws/lambda/nodejs:18
 WORKDIR /var/task
 
 # package.json と package-lock.json をコピー
-COPY package*.json ./
+COPY api/package*.json ./
 
 # 依存関係をインストール
 RUN npm install

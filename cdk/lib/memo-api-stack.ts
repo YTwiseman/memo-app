@@ -3,35 +3,43 @@ import { Construct } from "constructs";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as apigw from "aws-cdk-lib/aws-apigateway";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
+import * as ecr from "aws-cdk-lib/aws-ecr";
 
-// MemoApiStack クラスを定義（CDK スタック）
 export class MemoApiStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // 1. DynamoDB テーブルを作成
+    // 1. DynamoDB テーブル作成
     const table = new dynamodb.Table(this, "MemoTable", {
-      // パーティションキーは "id"（文字列型）
       partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
-      // DynamoDB 上のテーブル名
-      tableName: "MemoTable"
+      tableName: "MemoTable",
+      removalPolicy: cdk.RemovalPolicy.DESTROY, // 開発用。削除時にテーブルも消える
     });
 
-    // 2. Lambda 関数（Docker イメージ）を作成
+    // 2. ECR リポジトリ作成
+    const repo = new ecr.Repository(this, "MemoApiRepo", {
+      repositoryName: "memo-api", // 任意のリポジトリ名
+      removalPolicy: cdk.RemovalPolicy.DESTROY, // 開発用。削除時にリポジトリも消える
+    });
+
+    // 3. Lambda (Dockerイメージ) 作成
     const fn = new lambda.DockerImageFunction(this, "MemoFunction", {
-      // Docker イメージを ../api ディレクトリの Dockerfile から作成
-      code: lambda.DockerImageCode.fromImageAsset("../api"),
-      // 環境変数としてテーブル名を渡す
+      code: lambda.DockerImageCode.fromImageAsset("../api", {
+        // ECR にプッシュする場合は repository オプションを指定可能
+        // repository: repo,   <-- この行は不要。fromImageAsset が自動的にECRにpushする
+      }),
       environment: { TABLE_NAME: table.tableName },
-      // メモリサイズを 512MB に設定
-      memorySize: 512
+      memorySize: 512,
     });
 
-    // Lambda に DynamoDB の読み書き権限を付与
+    // Lambda に DynamoDB 権限を付与
     table.grantReadWriteData(fn);
 
-    // 3. API Gateway（Lambda REST API）を作成
-    // Lambda 関数をハンドラーとしてプロキシ統合
-    new apigw.LambdaRestApi(this, "MemoApi", { handler: fn, proxy: true });
+    // 4. API Gateway
+    new apigw.LambdaRestApi(this, "MemoApi", {
+      handler: fn,
+      proxy: true,
+    });
   }
 }
+

@@ -1,31 +1,31 @@
 {
   "version": "48.0.0",
   "files": {
-    "746bb5124479d718499920afb3505f7feb80a3b03ad0f66e6b40746ce2f3671f": {
+    "432fad0ece69be08aa0a42ed1bffa1a9ef9ea89073d280b1edaa8e69fe957395": {
       "displayName": "MemoStack Template",
       "source": {
         "path": "MemoStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-be33c9b0": {
+        "current_account-current_region-17d1a7bb": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "746bb5124479d718499920afb3505f7feb80a3b03ad0f66e6b40746ce2f3671f.json",
+          "objectKey": "432fad0ece69be08aa0a42ed1bffa1a9ef9ea89073d280b1edaa8e69fe957395.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     }
   },
   "dockerImages": {
-    "2a63dd498b8d7c30252f9ad3b8cc3dba87798218a3fc5542afafced10c9a3e58": {
+    "5ecacd1286313e518a84c188a4da8a7fbe203cc4c6b8ad4e8e2b276bf279f1ba": {
       "displayName": "MemoFunction/AssetImage",
       "source": {
-        "directory": "asset.2a63dd498b8d7c30252f9ad3b8cc3dba87798218a3fc5542afafced10c9a3e58"
+        "directory": "asset.5ecacd1286313e518a84c188a4da8a7fbe203cc4c6b8ad4e8e2b276bf279f1ba"
       },
       "destinations": {
-        "current_account-current_region-1602d39a": {
+        "current_account-current_region-eb87bfdb": {
           "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
-          "imageTag": "2a63dd498b8d7c30252f9ad3b8cc3dba87798218a3fc5542afafced10c9a3e58",
+          "imageTag": "5ecacd1286313e518a84c188a4da8a7fbe203cc4c6b8ad4e8e2b276bf279f1ba",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

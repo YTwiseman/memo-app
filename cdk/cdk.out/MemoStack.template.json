@@ -27,6 +27,17 @@
     "aws:cdk:path": "MemoStack/MemoTable/Resource"
    }
   },
+  "MemoApiRepoCC7D0EE1": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "RepositoryName": "memo-api"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "MemoStack/MemoApiRepo/Resource"
+   }
+  },
   "MemoFunctionServiceRole85E973D6": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -113,7 +124,7 @@
    "Properties": {
     "Code": {
      "ImageUri": {
-      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:2a63dd498b8d7c30252f9ad3b8cc3dba87798218a3fc5542afafced10c9a3e58"
+      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:5ecacd1286313e518a84c188a4da8a7fbe203cc4c6b8ad4e8e2b276bf279f1ba"
      }
     },
     "Environment": {
@@ -138,7 +149,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "MemoStack/MemoFunction/Resource",
-    "aws:asset:path": "asset.2a63dd498b8d7c30252f9ad3b8cc3dba87798218a3fc5542afafced10c9a3e58",
+    "aws:asset:path": "asset.5ecacd1286313e518a84c188a4da8a7fbe203cc4c6b8ad4e8e2b276bf279f1ba",
     "aws:asset:dockerfile-path": "Dockerfile",
     "aws:asset:property": "Code.ImageUri"
    }
@@ -521,7 +532,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02O3U7DMAyFn2X3mWEVEteDCQkJxNRxP7mp6bw2cZW4jKrqu6Ok/OzKX45Pjk8BxeYObld4iWtbt+uOK5gOirY1eInHqR49OqkrmN6x6sg8fvgMs+nQVTXCtBPbUnh22NDT4K2y+OS65j0FxzGy+NkwOphKWaLy3EvHdsy+TLMhG44YI2mEq/RtUtIOSuolskoYHzCSwZ4bVLrgCNNLblVS1G3P+cQ/bq2VwavZUd/J6MhrUq9eB8Um91qgpChDsJSP7IN8jb/KT/DCr6QnqZO00Dz//TS5c0pj3yTH26D9oLPxUhOc481nUcDmHjarc2Reh8ErO4Jymd+kabz/nAEAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02PQU/DMAyFf8vuWWAVEufBhIQEYuq4T25qSrYmrmKXUUX97ygJjJ78+SV+fq50tbnTtyu48Nq053VvGx0PAuas4MLH2E4eHLWNju/Q9KgeP3yGWaEJOtY4EFuhMKWXRfePD8A4qx5c04KOOzJnDM8OOnwavRFLPk0ueY/BWWZLflYWnI41lcW57qm3Jm8rlIMcgRmF9cJ9mxQFg+1A8AKTji85Qo0s28GWuFfcGkOjF7XDoafJoZekLrqDQJdDFKiRaQwG03FqH+h7+lN+jQu/onxSm6RC83ydVDlgcrO+Sz/eRhlGmZWnFvWJb76qSm/u9WZ1YmvXYfRiHeq61B/zvxf1twEAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "MemoStack/CDKMetadata/Default"

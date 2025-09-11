@@ -5,13 +5,13 @@ FROM public.ecr.aws/lambda/nodejs:18
 WORKDIR /var/task
 
 # package.json と package-lock.json をコピー
-COPY ../package*.json ./
+COPY api/package*.json ./
 
 # 依存関係をインストール
 RUN npm install
 
 # Lambda ソースコードをコピー
-COPY . .
+COPY api/dist/ ./dist ../api/dist/
 
 # Lambda ハンドラ指定
-CMD ["index.handler"]
+CMD ["dist/index.handler"]

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/746bb5124479d718499920afb3505f7feb80a3b03ad0f66e6b40746ce2f3671f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/432fad0ece69be08aa0a42ed1bffa1a9ef9ea89073d280b1edaa8e69fe957395.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -46,6 +46,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MemoTable68FB2B69"
+          }
+        ],
+        "/MemoStack/MemoApiRepo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MemoApiRepoCC7D0EE1"
           }
         ],
         "/MemoStack/MemoFunction/ServiceRole/Resource": [
