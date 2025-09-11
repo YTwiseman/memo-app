@@ -11,7 +11,7 @@ COPY package*.json ./
 RUN npm install
 
 # Lambda ソースコードをコピー
-COPY dist/ ./dist 
+COPY ./dist ./dist 
 
 # Lambda ハンドラ指定
 CMD ["dist/index.handler"]
