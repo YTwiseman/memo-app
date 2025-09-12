@@ -16,18 +16,13 @@ export class MemoApiStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY, // 開発用。削除時にテーブルも消える
     });
 
-    // 2. ECR リポジトリ作成
-    const repo = new ecr.Repository(this, "MemoApiRepo", {
-      repositoryName: "memo-api", // 任意のリポジトリ名
-      removalPolicy: cdk.RemovalPolicy.DESTROY, // 開発用。削除時にリポジトリも消える
-      autoDeleteImages: true, // 中身ごと削除
-    });
+    // 2. ECR リポジトリ参照
+    const repo = ecr.Repository.fromRepositoryName(this, "MemoApiRepo", "memo-api");
 
     // 3. Lambda (Dockerイメージ) 作成
     const fn = new lambda.DockerImageFunction(this, "MemoFunction", {
-      code: lambda.DockerImageCode.fromImageAsset("../api", {
-        // ECR にプッシュする場合は repository オプションを指定可能
-        // repository: repo,   <-- この行は不要。fromImageAsset が自動的にECRにpushする
+      code: lambda.DockerImageCode.fromEcr(repo, {
+        tagOrDigest: "latest", // 自分が push したイメージのタグ
       }),
       environment: { TABLE_NAME: table.tableName },
       memorySize: 512,
